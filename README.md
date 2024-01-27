@@ -1,5 +1,7 @@
 # libev-cmake
 
+[![Build](https://github.com/sjinks/libev-cmake/actions/workflows/build.yml/badge.svg)](https://github.com/sjinks/libev-cmake/actions/workflows/build.yml)
+
 libev with CMake support.
 
 ## Usage with [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
