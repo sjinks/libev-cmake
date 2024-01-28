@@ -17,7 +17,7 @@
       "customType": "regex",
       "fileMatch": ["^CMakeLists.txt$"],
       "matchStrings": [
-        "datasource=(?<datasource>[^ ]+) depName=(?<depName>\\w+)\\sset\\(.*?_VERSION \"(?<currentValue>[^\"]+)\""
+        "datasource=(?<datasource>[^ ]+) depName=(?<depName>\\S+)\\s+set\\(.*?_VERSION \"(?<currentValue>[^\"]+)\""
       ]
     }
   ],
