@@ -18,13 +18,13 @@ add_library(ev::ev ALIAS ev)
 
 target_compile_definitions(ev PRIVATE $<$<CONFIG:Debug>:EV_VERIFY=3>)
 
+include(CMakePackageConfigHelpers)
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckTypeSize)
 include(FetchContent)
 include(GNUInstallDirs)
-include(CheckLinkerFlag)
 
 # AC_INCLUDES_DEFAULT (implicit)
 check_include_files("sys/types.h" HAVE_SYS_TYPES_H)
@@ -170,7 +170,7 @@ if(MSVC)
     target_compile_definitions(ev _CRT_SECURE_NO_WARNINGS)
 endif()
 
-if(WIN32) 
+if(WIN32)
     target_link_libraries(ev Ws2_32)
 endif()
 
@@ -195,7 +195,6 @@ install(EXPORT libev-targets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libev
 )
 
-include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/libev-config-version.cmake
     VERSION ${PROJECT_VERSION}
