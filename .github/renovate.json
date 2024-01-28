@@ -30,7 +30,7 @@
   "packageRules": [
     {
       "matchDatasources": ["custom.libev-attic"],
-      "extractVersion": "/lib-(?<version>.+)\\.tar\\.gz$"
+      "extractVersion": "/libev-(?<version>.+)\\.tar\\.gz$"
     }
   ]
 }
