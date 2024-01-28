@@ -3,7 +3,6 @@
   "extends": [
     "local>sjinks/.github:renovate-config"
   ],
-  "baseBranches": ["master", "test"],
   "customManagers": [
     {
       "customType": "regex",
@@ -17,7 +16,7 @@
       "customType": "regex",
       "fileMatch": ["^CMakeLists.txt$"],
       "matchStrings": [
-        "datasource=(?<datasource>[^ ]+) depName=(?<depName>\\S+)\\s+set\\(.*?_VERSION \"(?<currentValue>[^\"]+)\""
+        "datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s+set\\s*\\(\\w+?_VERSION\\s+\"(?<currentValue>[^\"]+)\""
       ]
     }
   ],
