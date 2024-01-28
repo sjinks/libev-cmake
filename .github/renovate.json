@@ -11,6 +11,25 @@
         "https://github\\.com/(?<depName>[^{}()\\[\\]]+?)/releases/download/(?<currentValue>[^/]+?)/"
       ],
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^CMakeLists.txt$"],
+      "matchStrings": [
+        "datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s+set\\s*\\(\\w+?_VERSION\\s+\"(?<currentValue>[^\"]+)\""
+      ]
+    }
+  ],
+  "customDatasources": {
+    "libev-attic": {
+      "defaultRegistryUrlTemplate": "http://dist.schmorp.de/libev/Attic/",
+      "format": "html"
+    }
+  },
+  "packageRules": [
+    {
+      "matchDatasources": ["custom.libev-attic"],
+      "extractVersion": "libev-(?<version>.+)\\.tar\\.gz$"
     }
   ]
 }

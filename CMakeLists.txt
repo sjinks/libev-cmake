@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
-project(libev VERSION 4.33 LANGUAGES C)
+
+# renovate datasource=custom.libev-attic depName=libev
+set(LIBEV_VERSION "4.33")
+project(libev VERSION ${LIBEV_VERSION} LANGUAGES C)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel")
@@ -152,7 +155,7 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-FetchContent_Declare(ev_ext URL http://dist.schmorp.de/libev/libev-4.33.tar.gz URL_HASH SHA512=c662a65360115e0b2598e3e8824cf7b33360c43a96ac9233f6b6ea2873a10102551773cad0e89e738541e75af9fd4f3e3c11cd2f251c5703aa24f193128b896b)
+FetchContent_Declare(ev_ext URL "http://dist.schmorp.de/libev/Attic/libev-${LIBEV_VERSION}.tar.gz" URL_HASH SHA256=507eb7b8d1015fbec5b935f34ebed15bf346bed04a11ab82b8eee848c4205aea)
 FetchContent_MakeAvailable(ev_ext)
 
 target_include_directories(ev
