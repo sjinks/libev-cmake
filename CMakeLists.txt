@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-# renovate datasource=custom.libev-attic depName=libev 
+# renovate datasource=custom.libev-attic depName=libev
 set(LIBEV_VERSION "4.31")
 project(libev VERSION ${LIBEV_VERSION} LANGUAGES C)
 
