@@ -14,12 +14,19 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+if(BUILD_SHARED_LIBS)
+    set(libev_BUILD_SHARED_LIBS_DEFAULT ON)
+else()
+    set(libev_BUILD_SHARED_LIBS_DEFAULT OFF)
+endif()
+
+option(libev_BUILD_SHARED_LIBS "Build shared libraries" ${libev_BUILD_SHARED_LIBS_DEFAULT})
 
 add_library(ev)
 add_library(ev::ev ALIAS ev)
 
 target_compile_definitions(ev PRIVATE $<$<CONFIG:Debug>:EV_VERIFY=3>)
+target_compile_features(ev PRIVATE c_std_99)
 
 include(CMakePackageConfigHelpers)
 include(CheckFunctionExists)
@@ -29,57 +36,50 @@ include(CheckTypeSize)
 include(FetchContent)
 include(GNUInstallDirs)
 
+function(check_and_define items check_function)
+    foreach(item ${${items}})
+        string(TOUPPER ${item} item_upper)
+        string(MAKE_C_IDENTIFIER ${item_upper} item_upper)
+        if(${check_function} STREQUAL "check_include_files")
+            check_include_files(${item} "HAVE_${item_upper}")
+        elseif(${check_function} STREQUAL "check_function_exists")
+            check_function_exists(${item} "HAVE_${item_upper}")
+        endif()
+    endforeach()
+endfunction()
+
 # AC_INCLUDES_DEFAULT (implicit)
-check_include_files("sys/types.h" HAVE_SYS_TYPES_H)
-check_include_files("sys/stat.h" HAVE_SYS_STAT_H)
-check_include_files("stdlib.h" HAVE_STDLIB_H)
-check_include_files("string.h" HAVE_STRING_H)
-check_include_files("memory.h" HAVE_MEMORY_H)
-check_include_files("strings.h" HAVE_STRINGS_H)
-check_include_files("inttypes.h" HAVE_INTTYPES_H)
-check_include_files("stdint.h" HAVE_STDINT_H)
-check_include_files("unistd.h" HAVE_UNISTD_H)
+set(
+    HEADERS
+    # AC_INCLUDES_DEFAULT (implicit)
+    "sys/types.h" "sys/stat.h" "stdlib.h" "string.h" "memory.h" "strings.h" "inttypes.h" "stdint.h" "unistd.h"
+    # AC_HEADER_STDC (implicit)
+    "stdarg.h" "float.h"
+    "dlfcn.h"
+    # AC_CHECK_HEADERS(sys/inotify.h sys/epoll.h sys/event.h port.h poll.h sys/timerfd.h)
+    "sys/inotify.h" "sys/epoll.h" "sys/event.h" "port.h" "poll.h" "sys/timerfd.h"
+    # AC_CHECK_HEADERS(sys/select.h sys/eventfd.h sys/signalfd.h linux/aio_abi.h linux/fs.h)
+    "sys/select.h" "sys/eventfd.h" "sys/signalfd.h" "linux/aio_abi.h" "linux/fs.h"
+    "sys/syscall.h"
+)
+check_and_define(HEADERS check_include_files)
+# HAVE_STDLIB_H AND HAVE_STDARG_H AND HAVE_STRING_H AND HAVE_FLOAT_H - should be true because of c_std_99
+set(STDC_HEADERS 1)
 
-# AC_HEADER_STDC (implicit)
-# check_include_files("stdlib.h" HAVE_STDLIB_H)
-check_include_files("stdarg.h" HAVE_STDARG_H)
-# check_include_files("string.h" HAVE_STRING_H)
-check_include_files("float.h" HAVE_FLOAT_H)
-if(HAVE_STDLIB_H AND HAVE_STDARG_H AND HAVE_STRING_H AND HAVE_FLOAT_H)
-    set(STDC_HEADERS 1)
-endif()
-
-check_include_files("dlfcn.h" HAVE_DLFCN_H)
-
-# AC_CHECK_HEADERS(sys/inotify.h sys/epoll.h sys/event.h port.h poll.h sys/timerfd.h)
-check_include_files("sys/inotify.h" HAVE_SYS_INOTIFY_H)
-check_include_files("sys/epoll.h" HAVE_SYS_EPOLL_H)
-check_include_files("sys/event.h" HAVE_SYS_EVENT_H)
-check_include_files("port.h" HAVE_PORT_H)
-check_include_files("poll.h" HAVE_POLL_H)
-check_include_files("sys/timerfd.h" HAVE_SYS_TIMERFD_H)
-
-# AC_CHECK_HEADERS(sys/select.h sys/eventfd.h sys/signalfd.h linux/aio_abi.h linux/fs.h)
-check_include_files("sys/select.h" HAVE_SYS_SELECT_H)
-check_include_files("sys/eventfd.h" HAVE_SYS_EVENTFD_H)
-check_include_files("sys/signalfd.h" HAVE_SYS_SIGNALFD_H)
-check_include_files("linux/aio_abi.h" HAVE_LINUX_AIO_ABI_H)
-check_include_files("linux/fs.h" HAVE_LINUX_FS_H)
-
-check_include_files("sys/syscall.h" HAVE_SYS_SYSCALL_H)
-
-# AC_CHECK_FUNCS(inotify_init epoll_ctl kqueue port_create poll select eventfd signalfd)
-check_function_exists(inotify_init HAVE_INOTIFY_INIT)
-check_function_exists(epoll_ctl HAVE_EPOLL_CTL)
-check_function_exists(kqueue HAVE_KQUEUE)
-check_function_exists(port_create HAVE_PORT_CREATE)
-check_function_exists(poll HAVE_POLL)
-check_function_exists(select HAVE_SELECT)
-check_function_exists(eventfd HAVE_EVENTFD)
-check_function_exists(signalfd HAVE_SIGNALFD)
+set(
+    FUNCTIONS
+    # AC_CHECK_FUNCS(inotify_init epoll_ctl kqueue port_create poll select eventfd signalfd)
+    "inotify_init" "epoll_ctl" "kqueue" "port_create" "poll" "select" "eventfd" "signalfd"
+    # AC_CHECK_FUNCS(clock_gettime...)
+    "clock_gettime"
+    # AC_CHECK_FUNCS(nanosleep...)
+    "nanosleep"
+    # AC_SEARCH_LIBS(floor...)
+    "floor"
+)
+check_and_define(FUNCTIONS check_function_exists)
 
 # AC_CHECK_FUNCS(clock_gettime...)
-check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
 if(NOT HAVE_CLOCK_GETTIME)
     if(HAVE_UNISTD_H AND HAVE_SYS_SYSCALL_H)
         set(prog "
@@ -108,7 +108,6 @@ if(NOT HAVE_CLOCK_GETTIME)
 endif()
 
 # AC_CHECK_FUNCS(nanosleep...)
-check_function_exists(nanosleep HAVE_NANOSLEEP)
 if(NOT HAVE_NANOSLEEP)
     check_library_exists(rt nanosleep "" HAVE_NANOSLEEP_IN_RT)
 endif()
@@ -129,7 +128,6 @@ if(HAVE_LINUX_FS_H)
 endif()
 
 # AC_SEARCH_LIBS(floor...)
-check_function_exists(floor HAVE_FLOOR)
 if(NOT HAVE_FLOOR)
     check_library_exists(m floor "" HAVE_FLOOR_IN_LIBM)
 endif()
