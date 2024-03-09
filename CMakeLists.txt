@@ -21,6 +21,11 @@ else()
 endif()
 
 option(libev_BUILD_SHARED_LIBS "Build shared libraries" ${libev_BUILD_SHARED_LIBS_DEFAULT})
+if (libev_BUILD_SHARED_LIBS)
+    set(BUILD_SHARED_LIBS ON)
+else()
+    set(BUILD_SHARED_LIBS OFF)
+endif()
 
 add_library(ev)
 add_library(ev::ev ALIAS ev)
